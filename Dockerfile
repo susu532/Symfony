@@ -8,6 +8,8 @@ RUN apk add --no-cache nginx bash icu-dev libzip-dev libpng-dev libjpeg-turbo-de
 # Install PHP extensions
 RUN docker-php-ext-install intl pdo pdo_pgsql opcache zip gd xml mbstring
 
+ENV APP_ENV=prod
+
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
