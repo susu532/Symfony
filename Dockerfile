@@ -3,7 +3,7 @@
 FROM php:8.2-fpm-alpine as base
 
 # Install system dependencies
-RUN apk add --no-cache nginx bash icu-dev libzip-dev libpng-dev libjpeg-turbo-dev libwebp-dev zlib-dev libxml2-dev oniguruma-dev git unzip
+RUN apk add --no-cache nginx bash icu-dev libzip-dev libpng-dev libjpeg-turbo-dev libwebp-dev zlib-dev libxml2-dev oniguruma-dev git unzip libpq-dev
 
 # Install PHP extensions
 RUN docker-php-ext-install intl pdo pdo_pgsql opcache zip gd xml mbstring
