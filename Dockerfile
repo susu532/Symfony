@@ -28,7 +28,8 @@ COPY --from=assets /app/assets ./assets
 
 RUN chown -R www-data:www-data /var/www/html/var /var/www/html/public
 
-COPY --from=nginx:1.25-alpine /etc/nginx/nginx.conf /etc/nginx/nginx.conf
+# Use your own nginx.conf only
+
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
