@@ -13,8 +13,10 @@ COPY . .
 ENV APP_ENV=prod
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
+RUN mkdir -p /var/www/html/var /var/www/html/public && \
+    chown -R www-data:www-data /var/www/html/var /var/www/html/public
 
-RUN chown -R www-data:www-data /var/www/html/var /var/www/html/public
+
 
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
