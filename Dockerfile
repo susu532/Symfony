@@ -1,23 +1,25 @@
-# syntax=docker/dockerfile:1
+FROM php:8.2-cli
 
-# 1. Composer stage
-FROM composer:2.7 as composer
+# Install dependencies
+RUN apt-get update && apt-get install -y unzip git zip
 
-# 2. PHP/Nginx build stage
-FROM php:8.2-fpm-alpine as phpbase
-RUN apk add --no-cache nginx bash icu-dev libzip-dev libpng-dev libjpeg-turbo-dev libwebp-dev zlib-dev libxml2-dev oniguruma-dev git unzip libpq-dev
-RUN docker-php-ext-install intl pdo pdo_pgsql opcache zip gd xml mbstring
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html
+
+# Copy Composer files
+COPY composer.json composer.lock ./
+
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Now copy the rest of your app
 COPY . .
-ENV APP_ENV=prod
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-RUN mkdir -p /var/www/html/var /var/www/html/public && \
-    chown -R www-data:www-data /var/www/html/var /var/www/html/public
+# Fix missing var/public folders if needed
+RUN mkdir -p var public && chown -R www-data:www-data var public
 
-
-
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
+# Expose port and use PHP's built-in server
+EXPOSE 8000
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
